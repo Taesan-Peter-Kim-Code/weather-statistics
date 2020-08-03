@@ -55,9 +55,55 @@ class WeatherStatistics:
         controls_frame.pack()
         
         ttk.Label(controls_frame, text = 'Start', font='Arial 28 bold').grid(row=0, column=0, pady=5)
-        ttk.Label(controls_frame, text = '(YYYY-MM-DD HH:MM:SS', font='Courier 12').grid(row=1, column=0, padx=50, sticky='s')
+        ttk.Label(controls_frame, text = '(YYYY-MM-DD HH:MM:SS)', font='Courier 12').grid(row=1, column=0, padx=50, sticky='s')
+        self.start = StringVar()
+        ttk.Entry(controls_frame, width = 19, textvariable=self.start, font='Courier 12').grid(row=2, column=0, sticky='n')
+        self.start.set(str(num2date(self.datetime_array[0]))[0:19])
         
-    
+        ttk.Label(controls_frame, text = 'End', font='Arial 18 bold').grid(row=0, column=1, pady=5)
+        ttk.Label(controls_frame, text = '(YYYY-MM-DD HH:MM:SS)', font='Courier 12').grid(row=1, column=1, padx=50, sticky='s')
+        self.ebd = StringVar
+        ttk.Entry(controls_frame, width = 19, textvariable = self.end, font='Courier 12').grid(row=2, column=1, sticky='n')
+        self.end.set(str(num2date(self.datetime_array[-1]))[0:19])
+        
+        ttk.Button(controls_frame, text="Update", command=self._update).grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Style().configure('TButton', font='Arial 18 bold')
+        
+        self._update()
+        
+    def _update(self):
+        # get user input
+        try:
+            start_num = date2num(datetime(*list(map(int, re.findall(r'[\d]{1,4}', self.start.get())))))
+            end_num = date2num(datetime(*list(map(int, re.findall(r'[\d]{1,4}', self.end.get())))))
+        except Exception as e:
+            messagebox.showerror(title='Invalid Input VAlues', message=e)
+            return
+        start_idx = np.searchsorted(self.datetime_array, start_num)
+        end_idx = np.searchsorted(self.datetime_array, end_num)
+        
+        if end_idx <= start_idx:
+            messagebox.showerror(title='Invalid Input Values',
+                                 message = 'End Date must be after Start Date')
+            return
+
+        # calculate slope value
+        dy = self.barpress_array[end_idx] - self.barpress_array[start_idx]
+        dt = self.datetime_array[end_idx] - self.datetime_array[start_idx]
+        slope = dy/dt
+        
+        # plot data and slope line
+        self.a.clear()
+        self.a.plot_date(self.datetime_array[start_idx:end_idx],
+                         self.barpress_array[start_idx:end_idx], linewidth=2)
+        self.a.plot([self.datetime_array[start_idx], self.datetime_array[end_idx]],
+                    [self.barpress_array[start_idx], self.barpress_array[end_idx]],
+                    color='k', linestyle = '-', linewidth = 2)
+        self.a.set_ylabel('Barometric Pressure (inHg)')
+        self.a.set_xlabel('Date')
+        
+        # add colored slope value to figure
+        
     def main():
         root = Tk()
         app = WeatherStatistics(root)
