@@ -103,10 +103,18 @@ class WeatherStatistics:
         self.a.set_xlabel('Date')
         
         # add colored slope value to figure
+        color = 'green' if (slope >= 0) else 'red'
+        text_x = self.datetime_array[start_idx] + (self.datetime_array[end_idx] - self.datetime_array[start_idx])/2
+        text_y = self.barpress_array[start_idx] + (self.barpress_array[end_idx] - self.barpress_array[start_idx])/2
+        self.a.text(text_x, text_y, '{0:.6f} inHg/day'.format(slope), fontsize=16, 
+                    horizontalalignment='center',
+                    bbox=dict(facecolor=color))
         
-    def main():
-        root = Tk()
-        app = WeatherStatistics(root)
-        root.mainloop()
+        self.canvas.draw()
+        
+def main():
+    root = Tk()
+    app = WeatherStatistics(root)
+    root.mainloop()
     
-    if __name__ == "__main__": main()
+if __name__ == "__main__": main()
