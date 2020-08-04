@@ -16,11 +16,9 @@ class WeatherStatistics:
     def __init__(self, master):
         # load data
         datetime_list, barpress_list = [], []
-        datetime_re = re.compile(
-            r"[\d]{2,4}"
-        )  # regular expression to get datetime info
+        datetime_re = re.compile(r"[\d]{2,4}")  # regular expression to get datetime info
         for year in range(2012, 2016):
-            fileName = "./".format(year)
+            fileName = "../resources/Environmental_Data_Deep_Moor_{0}.txt".format(year)
             print("Loading {0}".format(fileName))
             for row in DictReader(open(fileName, "r"), delimiter="\t"):
                 barpress_list.append(float(row["Barometric_Press"]))
@@ -114,4 +112,5 @@ def main():
     app = WeatherStatistics(root)
     root.mainloop()
     
-if __name__ == "__main__": main()
+if __name__ == "__main__": 
+    main()
