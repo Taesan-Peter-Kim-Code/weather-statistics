@@ -20,16 +20,13 @@ class WeatherStatistics:
             r"[\d]{2,4}"
         )  # regular expression to get datetime info
         for year in range(2012, 2016):
-            fileName = "..\\resources\\Environmental_Data_Deep_Moor_{0}.txt".format(year)
+            fileName = "./".format(year)
             print("Loading {0}".format(fileName))
             for row in DictReader(open(fileName, "r"), delimiter="\t"):
                 barpress_list.append(float(row["Barometric_Press"]))
-                datetime_list.append(
-                    date2num(
-                        datetime(
-                            # *(asterisk operator) used to unpack that list of arguments and pass them to the date time constructor
-                            *list(
-                                map(int, datetime_re.findall(row["date       time    "]))))))
+                # *(asterisk operator) used to unpack that list of arguments and pass them to the date time constructor
+                datetime_list.append(date2num(datetime(*list(map(int, datetime_re.findall(row["date       time    "]))))))
+                
         #convert those lists into NumPy arrays
         self.datetime_array = np.array(datetime_list) 
         self.barpress_array = np.array(barpress_list)
