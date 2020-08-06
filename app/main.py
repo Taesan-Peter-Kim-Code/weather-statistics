@@ -15,15 +15,19 @@ from matplotlib.backends.backend_tkagg import (
 class WeatherStatistics:
     def __init__(self, master):
         # load data
-        datetime_list, barpress_list = [], []
-        datetime_re = re.compile(r"[\d]{2,4}")  # regular expression to get datetime info
-        for year in range(2012, 2016):
-            fileName = "../resources/Environmental_Data_Deep_Moor_{0}.txt".format(year)
-            print("Loading {0}".format(fileName))
-            for row in DictReader(open(fileName, "r"), delimiter="\t"):
-                barpress_list.append(float(row["Barometric_Press"]))
-                # *(asterisk operator) used to unpack that list of arguments and pass them to the date time constructor
-                datetime_list.append(date2num(datetime(*list(map(int, datetime_re.findall(row["date       time    "]))))))
+        try:
+            datetime_list, barpress_list = [], []
+            datetime_re = re.compile(r"[\d]{2,4}")  # regular expression to get datetime info
+            for year in range(2012, 2016):
+                fileName = "../resources/Environmental_Data_Deep_Moor_{0}.txt".format(year)
+                print("Loading {0}".format(fileName))
+                for row in DictReader(open(fileName, "r"), delimiter="\t"):
+                    barpress_list.append(float(row["Barometric_Press"]))
+                    # *(asterisk operator) used to unpack that list of arguments and pass them to the date time constructor
+                    datetime_list.append(date2num(datetime(*list(map(int, datetime_re.findall(row["date       time    "]))))))
+        except Exception as e:
+            messagebox.showerror(title="Error: Can't Load the Data", message=e)
+            return
                 
         #convert those lists into NumPy arrays
         self.datetime_array = np.array(datetime_list) 
